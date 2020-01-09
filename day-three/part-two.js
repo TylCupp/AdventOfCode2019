@@ -34,7 +34,7 @@ const wire2 = location(wireTwo);
 const findIntersections = () => {
   let smallestJourney = Infinity;
 
-  Object.keys(wire1).map(key => {
+  Object.keys(wire1).forEach(key => {
     const distance = wire2[key] ? wire1[key] + wire2[key] : Infinity;
     smallestJourney = smallestJourney > distance ? distance : smallestJourney;
   });
