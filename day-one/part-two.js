@@ -1,6 +1,8 @@
 const inputConvert = require('../index');
 
-const input = inputConvert('./input.txt');
+const input = inputConvert('./input.txt')
+  .split('\n')
+  .map(Number);
 
 const convertedFuelRequirements = input.map(mass => Math.floor(mass / 3) - 2);
 
