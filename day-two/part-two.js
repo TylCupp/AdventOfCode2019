@@ -6,41 +6,52 @@ const input = () => {
     .map(Number);
 };
 
-const convertedOpcodeProgram = (noun, verb, code) => {
-  const convertCode = code;
-  convertCode[1] = noun;
-  convertCode[2] = verb;
-
-  for (let i = 0; i < convertCode.length; i += 4) {
-    const opcode = convertCode[i];
-    const valOne = convertCode[convertCode[i + 1]];
-    const valTwo = convertCode[convertCode[i + 2]];
-
-    if (opcode === 1) convertCode[convertCode[i + 3]] = valOne + valTwo;
-    if (opcode === 2) convertCode[convertCode[i + 3]] = valOne * valTwo;
-    if (opcode === 99) break;
-  }
-
-  return convertCode[0];
+const opcode1 = (x, y) => {
+  return x + y;
 };
 
-const findNewNounAndVerb = () => {
-  let found = 0;
-  for (let i = 0; i < 99; i += 1) {
-    for (let j = 0; j < 99; j += 1) {
-      const resetCode = input();
-      const returnValue = convertedOpcodeProgram(i, j, resetCode);
+const opcode2 = (x, y) => {
+  return x * y;
+};
 
-      if (returnValue === 19690720) {
-        found = 100 * i + j;
-        break;
+const convertedOpcodeProgram = (code, noun, verb) => {
+  const program = code;
+  program[1] = noun;
+  program[2] = verb;
+  let instructionPointer = 0;
+
+  while (instructionPointer <= code.length) {
+    const opcode = program[instructionPointer];
+    if (opcode === 99) break;
+
+    if (opcode === 1 || opcode === 2) {
+      const val1 = program[program[instructionPointer + 1]];
+      const val2 = program[program[instructionPointer + 2]];
+      const store = program[instructionPointer + 3];
+      instructionPointer += 4;
+
+      program[store] = opcode === 1 ? opcode1(val1, val2) : opcode2(val1, val2);
+    } else {
+      instructionPointer += 4;
+    }
+  }
+  return program[0];
+};
+
+const locateIssue = locate => {
+  let locatedOutput;
+
+  for (let i = 0; i < 99; i += 1) {
+    if (locatedOutput) break;
+    for (let j = 0; j < 99; j += 1) {
+      const match = convertedOpcodeProgram(input(), i, j);
+      if (match === locate) {
+        locatedOutput = 100 * i + j;
       }
     }
-    if (found > 0) break;
   }
-  return found;
+
+  return locatedOutput;
 };
 
-const newProgram = findNewNounAndVerb();
-
-console.log(newProgram);
+console.log(locateIssue(19690720));

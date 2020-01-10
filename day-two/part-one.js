@@ -4,30 +4,33 @@ const input = inputConvert('./input.txt')
   .split(',')
   .map(Number);
 
+const opcode1 = (x, y) => {
+  return x + y;
+};
+
+const opcode2 = (x, y) => {
+  return x * y;
+};
+
 const convertedOpcodeProgram = code => {
-  const convertCode = code;
+  const program = code;
+  let instructionPointer = 0;
 
-  for (let i = 0; i < convertCode.length; i += 4) {
-    const opcode = convertCode[i];
-    const valOne = convertCode[convertCode[i + 1]];
-    const valTwo = convertCode[convertCode[i + 2]];
+  while (instructionPointer <= code.length) {
+    const opcode = program[instructionPointer];
 
-    if (opcode === 1) convertCode[convertCode[i + 3]] = valOne + valTwo;
-    if (opcode === 2) convertCode[convertCode[i + 3]] = valOne * valTwo;
     if (opcode === 99) break;
+
+    if (opcode === 1 || opcode === 2) {
+      const val1 = program[program[instructionPointer + 1]];
+      const val2 = program[program[instructionPointer + 2]];
+      const store = program[instructionPointer + 3];
+      instructionPointer += 4;
+
+      program[store] = opcode === 1 ? opcode1(val1, val2) : opcode2(val1, val2);
+    }
   }
-
-  return convertCode;
+  return program[0];
 };
 
-const restored = code => {
-  const newCode = code;
-  newCode[1] = 12;
-  newCode[2] = 2;
-
-  return newCode;
-};
-
-const newProgram = convertedOpcodeProgram(restored(input));
-
-console.log(newProgram[0]);
+console.log(convertedOpcodeProgram(input));
